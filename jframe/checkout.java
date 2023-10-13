@@ -74,7 +74,7 @@ public class checkout extends javax.swing.JFrame {
         String bookTitle = txt_bookTitle.getText();
         Date issueDate = new Date();
         
-        int noOfDays = 14; //i.e two weeks
+        int noOfDays = 14;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(issueDate);            
         calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
@@ -109,6 +109,35 @@ public class checkout extends javax.swing.JFrame {
         
         return checkoutSuccess;
     }
+    
+    public boolean returnBook(){
+        boolean returnSuccessful = false;
+        String studentID = txt_studentID.getText();
+        String bookTitle = txt_bookTitle.getText();
+        
+        try{
+            Connection con = DBC.getConnection();
+            String sql = "update checkout set bookCheckedOut = ? where studentID = ? and bookTitle = ? and bookCheckedOut = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, "Returned: No fees");        
+            pst.setString(2, studentID); 
+            pst.setString(3, bookTitle); 
+            pst.setString(4, "Yes"); 
+            int row = pst.executeUpdate();
+            
+            if(row > 0){
+                returnSuccessful = true;
+            }
+            else{
+                returnSuccessful = false;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return returnSuccessful;
+    }
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -454,7 +483,12 @@ public class checkout extends javax.swing.JFrame {
     
     //Select a book from the table to delete
     private void jLabel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseClicked
-
+        if(returnBook() == true){
+            JOptionPane.showMessageDialog(this, "Book returned successfully");
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "Error: book not returned");
+        }
     }//GEN-LAST:event_jLabel7MouseClicked
 
     private void studentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentTableMouseClicked
